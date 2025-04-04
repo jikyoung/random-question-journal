@@ -12,6 +12,12 @@
   {% endfor %}
 </ul>
 
-<a href="/" class="block mt-6 text-blue-600 hover:underline">← 질문으로 돌아가기</a>
+<!-- ✅ PDF 다운로드 버튼 -->
+<a href="/export/pdf" class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-6">
+  📄 PDF로 저장하기
+</a>
+
+<!-- ⬇ 기존 링크 유지 -->
+<a href="/" class="block mt-4 text-blue-600 hover:underline">← 질문으로 돌아가기</a>
 
 {% endblock %}

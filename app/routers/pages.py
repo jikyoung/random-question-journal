@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
+from app.utils.pdf import generate_pdf
+import io
+
 from fastapi.templating import Jinja2Templates
 from app.crud import get_random_question, save_answer, get_all_answers
 
@@ -20,3 +23,11 @@ def submit_answer(question_id: int = Form(...), answer_text: str = Form(...)):
 def show_answers(request: Request):
     answers = get_all_answers()
     return templates.TemplateResponse("answers.html", {"request": request, "answers": answers})
+
+
+@router.get("/export/pdf")
+def export_pdf():
+    pdf = generate_pdf()
+    return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf", headers={
+        "Content-Disposition": "attachment; filename=answers.pdf"
+    })

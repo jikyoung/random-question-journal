@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-4">내가 남긴 답변들</h1>
+
+<ul class="space-y-4">
+  {% for a in answers %}
+    <li class="bg-white shadow rounded p-4">
+      <p class="text-sm text-gray-500">{{ a.created_at[:16] }}</p>
+      <p class="text-base mt-1">{{ a.answer_text }}</p>
+    </li>
+  {% endfor %}
+</ul>
+
+<a href="/" class="block mt-6 text-blue-600 hover:underline">← 질문으로 돌아가기</a>
+
+{% endblock %}

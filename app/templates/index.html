@@ -4,7 +4,7 @@
 {% if question %}
   <h1 class="text-2xl font-bold mb-4">오늘의 질문</h1>
   <div class="bg-white rounded-xl shadow p-4 mb-6">
-    <p class="text-lg font-medium mb-2">{{ question.question }}</p>
+    <p class="text-lg font-medium mb-2">{{ question.question_text }}</p>
 
     <form method="post" action="/submit" class="space-y-4">
       <input type="hidden" name="question_id" value="{{ question.id }}">

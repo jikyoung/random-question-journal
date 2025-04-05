@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.routers import pages, answers, questions  #
 from fastapi.staticfiles import StaticFiles
+from app.routers import auth
 
 app = FastAPI()
 
@@ -8,6 +9,7 @@ app = FastAPI()
 app.include_router(pages.router)
 app.include_router(answers.router)
 app.include_router(questions.router)
+app.include_router(auth.router)
 
 @app.get("/")
 def root():

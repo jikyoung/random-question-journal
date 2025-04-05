@@ -1,4 +1,3 @@
-
 import sqlite3
 
 def get_db():
@@ -10,9 +9,19 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    # DROP & RE-CREATE for development reset (safe during early stage)
+    # 개발 단계에서는 테이블 초기화(DROP 후 CREATE)
     cursor.execute("DROP TABLE IF EXISTS answers")
+    cursor.execute("DROP TABLE IF EXISTS questions")  # ✅ 추가
 
+    # ✅ questions 테이블 생성
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS questions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question_text TEXT NOT NULL
+        )
+    ''')
+
+    # ✅ answers 테이블 생성
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS answers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

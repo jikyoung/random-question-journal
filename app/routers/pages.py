@@ -31,3 +31,13 @@ def export_pdf():
     return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf", headers={
         "Content-Disposition": "attachment; filename=answers.pdf"
     })
+
+@router.get("/", response_class=HTMLResponse)
+def show_question(request: Request):
+    question = get_random_question()
+    if not question:
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "message": "📌 모든 질문을 완료했어요!\n새로운 질문이 없어요. 내일 다시 확인해보세요 🙂"
+        })
+    return templates.TemplateResponse("index.html", {"request": request, "question": question})

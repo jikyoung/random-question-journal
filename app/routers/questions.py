@@ -1,40 +1,36 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+from app.database import get_db
 import random
-import json
+import sqlite3
 
 router = APIRouter(prefix="/questions", tags=["questions"])
 
+class QuestionCreate(BaseModel):
+    question_text: str
+
+# ✅ 무작위 질문 가져오기
 @router.get("/random")
-def get_random_question():
-    with open("questions.json", "r", encoding="utf-8") as f:
-        questions = json.load(f)
-    return random.choice(questions)
+def get_random_question(db: sqlite3.Connection = Depends(get_db)):
+    cursor = db.cursor()
+    questions = cursor.execute("SELECT * FROM questions").fetchall()
 
-# from fastapi import APIRouter, HTTPException
-# from pydantic import BaseModel
-# import random
-# import json
-# import logging
+    if not questions:
+        return {"message": "등록된 질문이 없습니다."}
+    
+    question = random.choice(questions)
+    return {"id": question["id"], "question_text": question["question_text"]}
 
-# router = APIRouter(prefix="/questions", tags=["questions"])
-
-# # ✅ 질문 스키마 정의
-# class Question(BaseModel):
-#     id: int
-#     question: str
-
-# # ✅ 앱 시작 시 질문 파일 읽기 (캐싱용)
-# try:
-#     with open("questions.json", "r", encoding="utf-8") as f:
-#         questions_data = json.load(f)
-#         if not isinstance(questions_data, list):
-#             raise ValueError("questions.json must contain a list of questions")
-# except Exception as e:
-#     logging.error(f"Failed to load questions.json: {e}")
-#     questions_data = []
-
-# @router.get("/random", response_model=Question)
-# def get_random_question():
-#     if not questions_data:
-#         raise HTTPException(status_code=500, detail="No questions available.")
-#     return random.choice(questions_data)
+# ✅ 질문 추가
+@router.post("/")
+def create_question(question: QuestionCreate, db: sqlite3.Connection = Depends(get_db)):
+    if not question.question_text.strip():
+        raise HTTPException(status_code=400, detail="질문 내용은 비워둘 수 없습니다.")
+    
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO questions (question_text) VALUES (?)",
+        (question.question_text,)
+    )
+    db.commit()
+    return {"message": "질문이 추가되었습니다!", "question": question.question_text}

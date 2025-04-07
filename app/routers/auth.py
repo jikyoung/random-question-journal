@@ -1,16 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 import os
+import httpx
 from dotenv import load_dotenv
-load_dotenv()  # .env 파일에서 환경변수 로드
-from fastapi import Request
 
-router = APIRouter()
+load_dotenv()
+
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 KAKAO_CLIENT_ID = os.getenv("KAKAO_CLIENT_ID")
 KAKAO_REDIRECT_URI = os.getenv("KAKAO_REDIRECT_URI")
 
-@router.get("/login/kakao")
+@router.get("/login")
 def login_kakao():
     kakao_auth_url = (
         f"https://kauth.kakao.com/oauth/authorize"
@@ -21,18 +22,14 @@ def login_kakao():
     return RedirectResponse(kakao_auth_url)
 
 
-@router.get("/auth/callback")
-async def auth_callback(request: Request):
+@router.get("/callback")
+async def kakao_callback(request: Request):
     code = request.query_params.get("code")
     if not code:
         return {"error": "No code found in callback URL"}
 
-    # 액세스 토큰 요청
-    import httpx
-
     token_url = "https://kauth.kakao.com/oauth/token"
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = {
+    token_data = {
         "grant_type": "authorization_code",
         "client_id": KAKAO_CLIENT_ID,
         "redirect_uri": KAKAO_REDIRECT_URI,
@@ -40,36 +37,33 @@ async def auth_callback(request: Request):
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(token_url, headers=headers, data=data)
-        token_json = response.json()
-
-    return token_json
-
-@router.get("/login/kakao/callback")
-async def kakao_callback(code: str):
-    token_url = "https://kauth.kakao.com/oauth/token"
-    user_info_url = "https://kapi.kakao.com/v2/user/me"
-
-    data = {
-        "grant_type": "authorization_code",
-        "client_id": KAKAO_CLIENT_ID,
-        "redirect_uri": KAKAO_REDIRECT_URI,
-        "code": code,
-    }
-
-    async with httpx.AsyncClient() as client:
-        # 액세스 토큰 요청
-        token_res = await client.post(token_url, data=data)
-        token_json = token_res.json()
+        token_response = await client.post(token_url, data=token_data, headers={
+            "Content-Type": "application/x-www-form-urlencoded"
+        })
+        token_json = token_response.json()
         access_token = token_json.get("access_token")
 
-        # 사용자 정보 요청
-        headers = {"Authorization": f"Bearer {access_token}"}
-        user_res = await client.get(user_info_url, headers=headers)
-        user_json = user_res.json()
+        if not access_token:
+            return {"error": "Failed to get access token", "details": token_json}
 
-        # 사용자 정보 추출
-        kakao_id = user_json.get("id")
-        nickname = user_json.get("properties", {}).get("nickname")
+        user_info_url = "https://kapi.kakao.com/v2/user/me"
+        user_response = await client.get(user_info_url, headers={
+            "Authorization": f"Bearer {access_token}"
+        })
+        user_json = user_response.json()
 
-        return {"kakao_id": kakao_id, "nickname": nickname}
+    kakao_id = user_json.get("id")
+    nickname = user_json.get("properties", {}).get("nickname")
+
+    response = RedirectResponse(url="/")
+    response.set_cookie(key="user_id", value=str(kakao_id))
+    response.set_cookie(key="nickname", value=nickname)
+    return response
+
+
+@router.get("/logout")
+def logout():
+    response = RedirectResponse(url="/")
+    response.delete_cookie("user_id")
+    response.delete_cookie("nickname")
+    return response

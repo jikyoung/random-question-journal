@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- ✅ 로그인 상태 확인 -->
+<div class="flex justify-end mb-4">
+  {% if nickname %}
+    <span class="mr-2 text-gray-700 font-semibold">👋 {{ nickname }}님</span>
+    <a href="/auth/logout" class="text-red-600 underline">로그아웃</a>
+  {% else %}
+    <a href="/auth/login" class="text-blue-600 underline">카카오 로그인</a>
+  {% endif %}
+</div>
+
 {% if question %}
   <h1 class="text-2xl font-bold mb-4">오늘의 질문</h1>
   <div class="bg-white rounded-xl shadow p-4 mb-6">
-    <p class="text-lg font-medium mb-2">{{ question.question_text }}</p>
+    <p class="text-lg font-medium mb-2">{{ question.question }}</p>
 
     <form method="post" action="/submit" class="space-y-4">
       <input type="hidden" name="question_id" value="{{ question.id }}">
@@ -18,7 +28,7 @@
   <div class="bg-white rounded-xl shadow p-6 text-center">
     <h2 class="text-xl font-semibold mb-2 text-red-600">📌 모든 질문을 완료했어요!</h2>
     <p class="mb-4">새로운 질문이 없어요. 내일 다시 확인해보세요 🙂</p>
-    <a href="/answers" class="text-blue-600 underline">→ 내가 쓴 답변 보기</a>
+    <a href="/pages/answers" class="text-blue-600 underline">→ 내가 쓴 답변 보기</a>
   </div>
 {% endif %}
 

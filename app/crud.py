@@ -13,22 +13,29 @@ def get_db():
         db.close()
 
 # ✅ 1. 사용자별로 아직 답변하지 않은 질문 중 랜덤 1개 가져오기
-def get_random_question(user_id: int):
-    if not user_id:
-        return None
-    
+def get_random_question(user_id: int = None):
     db = SessionLocal()
 
-    answered_ids = db.query(models.Answer.question_id).filter(
-        models.Answer.user_id == user_id
-    ).all()
-    answered_ids = [row[0] for row in answered_ids]
+    if user_id:
+        # 사용자별로 이미 답한 질문 제외
+        answered_ids = db.query(models.Answer.question_id).filter(
+            models.Answer.user_id == user_id
+        ).all()
+        answered_ids = [row[0] for row in answered_ids]
 
-    questions = db.query(models.Question).filter(
-        ~models.Question.id.in_(answered_ids)
-    ).all()
+        questions = db.query(models.Question).filter(
+            ~models.Question.id.in_(answered_ids)
+        ).all()
+    else:
+        # 비로그인 사용자는 전체 질문 중 랜덤
+        questions = db.query(models.Question).all()
 
     db.close()
+
+    if not questions:
+        return None
+
+    return random.choice(questions)
 
     if not questions:
         return None

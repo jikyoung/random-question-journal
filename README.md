@@ -16,31 +16,35 @@ FastAPI 기반으로 개발되었으며, 카카오 로그인, 질문 저장, PDF
 - Frontend: **HTML + Tailwind CSS + Jinja2 템플릿**
 - 기타: **카카오 소셜 로그인**, **WeasyPrint PDF 변환**
 
-## 📁 디렉토리 구조
+<pre><code>## 📁 디렉토리 구조
+```
 random-question-journal/
 ├── app/
-│   ├── main.py              # FastAPI 앱 실행
-│   ├── database.py          # DB 연결 설정
-│   ├── crud.py              # DB 조작 함수
-│   ├── models.py            # SQLAlchemy 모델 정의
-│   ├── auth_utils.py        # 사용자 쿠키 정보 유틸
+│   ├── main.py                # FastAPI 앱 실행
+│   ├── database.py            # DB 연결 설정
+│   ├── crud.py                # DB 조작 함수
+│   ├── models.py              # SQLAlchemy 모델 정의
+│   ├── auth_utils.py          # 사용자 쿠키 정보 유틸
 │   ├── utils/
-│   │   └── pdf.py           # PDF 생성 로직
-│   ├── templates/           # HTML 템플릿
+│   │   └── pdf.py             # PDF 생성 로직
+│   ├── templates/             # HTML 템플릿
 │   │   ├── base.html
 │   │   ├── index.html
 │   │   ├── answers.html
 │   │   ├── admin_questions.html
 │   │   └── new_question.html
-│   └── routers/             # 라우터 구성
+│   └── routers/               # 라우터 구성
 │       ├── pages.py
 │       ├── answers.py
 │       ├── auth.py
 │       ├── questions.py
 │       └── admin_questions.py
-├── requirements.txt         # 의존성 목록
-├── run.py                   # 실행 파일 (선택)
-└── db.sqlite3               # SQLite DB 파일
+├── requirements.txt           # 의존성 목록
+├── run.py                     # 실행 파일 (선택)
+└── db.sqlite3                 # SQLite DB 파일
+```
+</code></pre>
+
 ## ✅ 실행 방법
 ```bash
 # 가상환경 활성화 후 아래 명령 실행
@@ -60,4 +64,4 @@ uvicorn app.main:app --reload
 	•	배포 및 도메인 연결 (Render or Railway 예정)
 🙌 개발자
 	•	GitHub: @jikyoung
-
+##

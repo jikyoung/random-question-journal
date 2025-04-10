@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from app.utils.pdf import generate_pdf
-from app.crud import get_random_question, save_answer, get_all_answers
+from app.crud import get_question_for_today, save_answer, get_all_answers
 import io
 from app.auth_utils import get_current_user
 
@@ -27,7 +27,7 @@ def show_question(request: Request):
     except ValueError:
         user_id_int = None
 
-    question = get_random_question(user_id_int)
+    question = get_question_for_today()
     print("🧪 가져온 질문:", question)
     if question:
         print("🧪 질문 텍스트:", question.question_text)

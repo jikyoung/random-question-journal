@@ -1,33 +1,38 @@
+# 📁 app/routers/pages.py
+
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from app.utils.pdf import generate_pdf
 from app.crud import get_random_question, save_answer, get_all_answers
 import io
+from app.auth_utils import get_current_user
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 
-# ✅ 질문 페이지: 로그인한 사용자만 접근 가능
+# ✅ 질문 페이지: 로그인 여부와 관계없이 제공
 @router.get("/", response_class=HTMLResponse)
 def show_question(request: Request):
-    user_id = request.cookies.get("user_id")
-    nickname = request.cookies.get("nickname")
+    user = get_current_user(request)
+    user_id = user.get("user_id")
+    nickname = user.get("nickname")
 
-    if not user_id:
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "message": "로그인이 필요합니다.",
-            "nickname": nickname
-        })
+    print("🧪 user_id:", user_id)
+    print("🧪 nickname:", nickname)
 
-    question = get_random_question(int(user_id))  # 👈 문자열 → 정수형 변환 필수
+    try:
+        user_id_int = int(user_id) if user_id else None
+    except ValueError:
+        user_id_int = None
+
+    question = get_random_question(user_id_int)
 
     if not question:
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "message": "📌 모든 질문을 완료했어요!\n새로운 질문이 없어요. 내일 다시 확인해보세요 🙂",
+            "message": "📌 오늘의 질문이 없습니다. 내일 다시 시도해보세요!",
             "nickname": nickname
         })
 
@@ -38,28 +43,33 @@ def show_question(request: Request):
     })
 
 
-# ✅ 답변 제출 처리
+# ✅ 답변 저장: 로그인 여부와 관계없이 가능
 @router.post("/submit")
 def submit_answer(request: Request, question_id: int = Form(...), answer_text: str = Form(...)):
     user_id = request.cookies.get("user_id")
+    try:
+        user_id_int = int(user_id) if user_id else None
+    except ValueError:
+        user_id_int = None
 
-    if not user_id:
-        return RedirectResponse(url="/", status_code=303)
-
-    save_answer(question_id, int(user_id), answer_text)
+    save_answer(question_id, user_id_int, answer_text)
     return RedirectResponse(url="/pages/answers", status_code=303)
 
 
-# ✅ 사용자 답변 목록 조회
+# ✅ 사용자 답변 목록 조회: 로그인한 사용자만 해당 답변 조회
 @router.get("/pages/answers", response_class=HTMLResponse)
 def show_answers(request: Request):
-    user_id = request.cookies.get("user_id")
-    nickname = request.cookies.get("nickname")
+    user = get_current_user(request)
+    user_id = user.get("user_id")
+    nickname = user.get("nickname")
 
-    if not user_id:
+
+    try:
+        user_id_int = int(user_id)
+    except (TypeError, ValueError):
         return RedirectResponse(url="/", status_code=303)
 
-    answers = get_all_answers(int(user_id))
+    answers = get_all_answers(user_id_int)
 
     return templates.TemplateResponse("answers.html", {
         "request": request,
@@ -68,10 +78,14 @@ def show_answers(request: Request):
     })
 
 
-# ✅ PDF 내보내기
+# ✅ PDF 내보내기: 로그인한 사용자만 가능
 @router.get("/export/pdf")
-def export_pdf():
-    pdf = generate_pdf()
+def export_pdf(request: Request):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        return RedirectResponse(url="/", status_code=303)
+
+    pdf = generate_pdf(int(user_id))
     return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf", headers={
         "Content-Disposition": "attachment; filename=answers.pdf"
     })

@@ -1,16 +1,11 @@
 from fastapi import FastAPI
-from app.routers import pages, answers, questions  #
+from app.routers import pages, answers, questions, auth
 from fastapi.staticfiles import StaticFiles
-from app.routers import auth
 
 app = FastAPI()
 
-# 🔽 여기에 각 라우터를 연결해야 함
+# 라우터 등록
 app.include_router(pages.router)
 app.include_router(answers.router)
 app.include_router(questions.router)
 app.include_router(auth.router)
-
-@app.get("/")
-def root():
-    return {"message": "Hello, Random Question Journal!"}

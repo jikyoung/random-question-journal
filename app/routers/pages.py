@@ -28,6 +28,9 @@ def show_question(request: Request):
         user_id_int = None
 
     question = get_random_question(user_id_int)
+    print("🧪 가져온 질문:", question)
+    if question:
+        print("🧪 질문 텍스트:", question.question_text)
 
     if not question:
         return templates.TemplateResponse("index.html", {

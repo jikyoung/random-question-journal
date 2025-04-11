@@ -5,9 +5,20 @@
 
 <ul class="space-y-4">
   {% for a in answers %}
-    <li class="bg-white shadow rounded p-4">
-      <p class="text-sm text-gray-500">{{ a.created_at[:16] }}</p>
-      <p class="text-base mt-1">{{ a.answer_text }}</p>
+    <li class="bg-white shadow rounded-lg p-5 border border-gray-200">
+      <p class="text-sm text-gray-400 mb-1">{{ a.created_at[:16] }}</p>
+      <div class="mb-2">
+        <span class="text-gray-700 font-semibold">Q.</span>
+        {% if a.question %}
+          <span class="text-gray-800">{{ a.question.question_text }}</span>
+        {% else %}
+          <span class="text-red-500">질문 정보 없음</span>
+        {% endif %}
+      </div>
+      <div>
+        <span class="text-gray-700 font-semibold">A.</span>
+        <span class="text-gray-900">{{ a.answer_text }}</span>
+      </div>
     </li>
   {% endfor %}
 </ul>

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app import models
 from app.database import SessionLocal
 import random
@@ -78,7 +78,9 @@ def save_answer(question_id: int, user_id: int, answer_text: str):
 # ✅ 3. 사용자 답변 전체 가져오기
 def get_all_answers(user_id: int):
     db = SessionLocal()
-    answers = db.query(models.Answer).filter(
+    answers = db.query(models.Answer).options(
+        joinedload(models.Answer.question)  # Eager load the related Question
+    ).filter(
         models.Answer.user_id == user_id
     ).order_by(models.Answer.created_at.desc()).all()
     db.close()

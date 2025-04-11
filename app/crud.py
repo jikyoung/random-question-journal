@@ -3,6 +3,7 @@ from app import models
 from app.database import SessionLocal
 import random
 from datetime import datetime, date
+from passlib.context import CryptContext
 
 # ✅ DB 세션 가져오기 (FastAPI Depends용)
 def get_db():
@@ -94,3 +95,21 @@ def has_answered_today(user_id: int, question_id: int):
     ).first()
     db.close()
     return result is not None
+
+# ✅ 비밀번호 해싱을 위한 설정
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+# ✅ 이메일로 사용자 조회
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+# ✅ 사용자 생성
+def create_user(db: Session, email: str, password: str):
+    hashed_pw = pwd_context.hash(password)
+    user = models.User(email=email, hashed_password=hashed_pw)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user

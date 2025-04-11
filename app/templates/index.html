@@ -10,19 +10,29 @@
     <a href="/auth/login" class="text-blue-600 underline">카카오 로그인</a>
   {% endif %}
 </div>
-
-{% if question %}
+{% if message %}
+  <div class="bg-white rounded-xl shadow p-6 text-center">
+    <h2 class="text-xl font-semibold mb-2 text-green-600">{{ message }}</h2>
+    <a href="/pages/answers" class="text-blue-600 underline">→ 내가 쓴 답변 보기</a>
+  </div>
+{% elif question %}
   <h1 class="text-2xl font-bold mb-4">오늘의 질문</h1>
   <div class="bg-white rounded-xl shadow p-4 mb-6">
     <p class="text-lg font-medium mb-2">{{ question.question_text }}</p>
 
-    <form method="post" action="/submit" class="space-y-4">
-      <input type="hidden" name="question_id" value="{{ question.id }}">
-      <textarea name="answer_text" rows="4" class="w-full border rounded p-2" placeholder="당신의 답변은?"></textarea>
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-        답변 저장하기
-      </button>
-    </form>
+
+    {% if already_answered %}
+      <div class="text-green-700 font-medium mb-4">✅ 이미 오늘의 질문에 답변하셨습니다!</div>
+      <a href="/pages/answers" class="text-blue-600 underline">→ 내가 쓴 답변 보기</a>
+    {% else %}
+      <form method="post" action="/submit" class="space-y-4">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <textarea name="answer_text" rows="4" class="w-full border rounded p-2" placeholder="당신의 답변은?"></textarea>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          답변 저장하기
+        </button>
+      </form>
+    {% endif %}
   </div>
 {% else %}
   <div class="bg-white rounded-xl shadow p-6 text-center">

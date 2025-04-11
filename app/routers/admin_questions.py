@@ -47,3 +47,16 @@ def delete_question(question_id: int = Form(...)):
         db.commit()
     db.close()
     return RedirectResponse(url="/admin/questions", status_code=303)
+
+# ✅ 줄바꿈 기반 다중 질문 추가
+@router.post("/add")
+def add_questions(request: Request, question_text: str = Form(...)):
+    db = SessionLocal()
+    lines = question_text.strip().split("\n")
+    for line in lines:
+        line = line.strip()
+        if line:
+            db.add(Question(question_text=line))  # ← 수정 완료
+    db.commit()
+    db.close()
+    return RedirectResponse(url="/admin/questions/", status_code=303)

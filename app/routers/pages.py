@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from app.utils.pdf import generate_pdf
-from app.crud import get_question_for_today, save_answer, get_all_answers
+from app.crud import get_question_for_today, save_answer, get_all_answers, has_answered_today
 import io
 from app.auth_utils import get_current_user
 
@@ -38,6 +38,14 @@ def show_question(request: Request):
             "message": "📌 오늘의 질문이 없습니다. 내일 다시 시도해보세요!",
             "nickname": nickname
         })
+    
+    if user_id_int and has_answered_today(user_id_int, question.id):
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "message": "📌 오늘 이미 답변하셨습니다. 내일 다시 시도해보세요!",
+            "nickname": nickname
+        })
+
 
     return templates.TemplateResponse("index.html", {
         "request": request,
@@ -49,6 +57,7 @@ def show_question(request: Request):
 # ✅ 답변 저장: 로그인 여부와 관계없이 가능
 @router.post("/submit")
 def submit_answer(request: Request, question_id: int = Form(...), answer_text: str = Form(...)):
+    user_id = request.cookies.get("user_id")
     user_id = request.cookies.get("user_id")
     try:
         user_id_int = int(user_id) if user_id else None
@@ -65,7 +74,6 @@ def show_answers(request: Request):
     user = get_current_user(request)
     user_id = user.get("user_id")
     nickname = user.get("nickname")
-
 
     try:
         user_id_int = int(user_id)

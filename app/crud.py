@@ -82,3 +82,15 @@ def get_all_answers(user_id: int):
     ).order_by(models.Answer.created_at.desc()).all()
     db.close()
     return answers
+
+
+def has_answered_today(user_id: int, question_id: int):
+    db = SessionLocal()
+    today_str = date.today().isoformat()
+    result = db.query(models.Answer).filter(
+        models.Answer.user_id == user_id,
+        models.Answer.question_id == question_id,
+        models.Answer.created_at.like(f"{today_str}%")
+    ).first()
+    db.close()
+    return result is not None

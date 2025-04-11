@@ -17,7 +17,7 @@ class Answer(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     question_id = Column(Integer, ForeignKey("questions.id"))
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(Integer, nullable=True)
     answer_text = Column(String)
     created_at = Column(String)
 

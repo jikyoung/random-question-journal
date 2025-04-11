@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from app.utils.pdf import generate_pdf
-from app.crud import get_question_for_today, save_answer, get_all_answers, has_answered_today
+from app.crud import get_question_for_today, save_answer, get_all_answers, has_answered_today, get_random_question
 import io
 from app.auth_utils import get_current_user
 
@@ -43,7 +43,9 @@ def show_question(request: Request):
         return templates.TemplateResponse("index.html", {
             "request": request,
             "message": "📌 오늘 이미 답변하셨습니다. 내일 다시 시도해보세요!",
-            "nickname": nickname
+            "nickname": nickname,
+            "question": question,
+            "already_answered": True
         })
 
 
@@ -99,4 +101,26 @@ def export_pdf(request: Request):
     pdf = generate_pdf(int(user_id))
     return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf", headers={
         "Content-Disposition": "attachment; filename=answers.pdf"
+    })
+
+
+@router.get("/more", response_class=HTMLResponse)
+def show_more_question(request: Request):
+    user = get_current_user(request)
+    user_id = user.get("user_id")
+    nickname = user.get("nickname")
+
+    try:
+        user_id_int = int(user_id) if user_id else None
+    except ValueError:
+        user_id_int = None
+
+    # 오늘 질문과 관계없이 랜덤 질문 하나 가져오기 (이미 답한 것도 포함)
+    question = get_random_question(user_id_int)
+
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "question": question,
+        "nickname": nickname,
+        "already_answered": False  # 👉 새로운 질문이므로 항상 답변 가능하게
     })

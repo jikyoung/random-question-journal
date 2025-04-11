@@ -60,3 +60,19 @@ def add_questions(request: Request, question_text: str = Form(...)):
     db.commit()
     db.close()
     return RedirectResponse(url="/admin/questions/", status_code=303)
+
+
+@router.get("/more", response_class=HTMLResponse)
+def show_additional_question(request: Request):
+    question = get_random_question()
+
+    if not question:
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "message": "📌 더 이상 제공할 질문이 없습니다."
+        })
+
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "question": question
+    })

@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
+from datetime import datetime, timezone
+
 
 class Question(Base):
     __tablename__ = "questions"
@@ -25,10 +28,6 @@ class Answer(Base):
     question = relationship("Question", back_populates="answers")
 
 
-
-from sqlalchemy import Column, Integer, String, DateTime
-from datetime import datetime
-
 class User(Base):
     __tablename__ = "users"
 
@@ -36,4 +35,15 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     nickname = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+
+
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    nickname = Column(String, nullable=True)

@@ -69,6 +69,8 @@ async def kakao_callback(request: Request):
     nickname = user_json.get("properties", {}).get("nickname") or f"사용자{str(kakao_id)[-4:]}"
     encoded_nickname = quote(nickname)
 
+    request.session["nickname"] = nickname
+
     response = RedirectResponse(url="/")
     response.set_cookie(key="user_id", value=str(kakao_id))
     response.set_cookie(key="nickname", value=encoded_nickname)
@@ -100,6 +102,8 @@ def handle_signup(
     db.refresh(new_user)
     db.close()
 
+    request.session["nickname"] = nickname
+
     encoded_nickname = quote(nickname)
     response = RedirectResponse(url="/", status_code=303)
     response.set_cookie(key="user_id", value=str(new_user.id))
@@ -124,6 +128,8 @@ def handle_login(
 
     if not user or not bcrypt.verify(password, user.hashed_password):
         return HTMLResponse("이메일 또는 비밀번호가 올바르지 않습니다.", status_code=400)
+
+    request.session["nickname"] = user.nickname
 
     encoded_nickname = quote(user.nickname)
     response = RedirectResponse(url="/", status_code=303)

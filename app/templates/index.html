@@ -11,6 +11,11 @@
     <a href="/auth/signup" class="text-blue-600 underline">회원가입</a>
   {% endif %}
 </div>
+
+<div class="flex justify-end mb-4">
+  <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600 underline">🗂️ 게시판</a>
+</div>
+
 {% if message %}
   <div class="bg-white rounded-xl shadow p-6 text-center">
     <h2 class="text-xl font-semibold mb-2 text-green-600">{{ message }}</h2>
@@ -24,7 +29,6 @@
   <h1 class="text-2xl font-bold mb-4">오늘의 질문</h1>
   <div class="bg-white rounded-xl shadow p-4 mb-6">
     <p class="text-lg font-medium mb-2">{{ question.question_text }}</p>
-
 
     {% if already_answered %}
       <div class="text-green-700 font-medium mb-4">✅ 이미 오늘의 질문에 답변하셨습니다!</div>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-6">📝 게시판</h1>
+
+<!-- 작성 폼 -->
+<form method="post" class="bg-white shadow rounded p-4 mb-6 space-y-4">
+  <input type="text" name="title" placeholder="제목을 입력하세요" required
+         class="w-full border rounded p-2">
+  <textarea name="content" placeholder="내용을 입력하세요" required
+            class="w-full border rounded p-2"></textarea>
+  <button type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+    게시글 작성
+  </button>
+</form>
+
+<!-- 게시글 리스트 -->
+<div class="space-y-4">
+  {% for post in posts %}
+    <div class="bg-white shadow rounded p-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <h2 class="text-lg font-semibold">{{ post.title }}</h2>
+          <p class="text-gray-700 mt-2">{{ post.content }}</p>
+        </div>
+        <form method="post" action="/posts/{{ post.id }}/delete" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+          <button type="submit" class="text-red-500 text-sm hover:underline">삭제</button>
+        </form>
+      </div>
+      <div class="text-sm text-gray-400 mt-2 flex justify-between">
+        <span>{{ post.nickname or "익명" }}</span>
+        <span>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+      <!-- 댓글 영역 (준비만) -->
+      <div class="mt-4 border-t pt-2">
+        <p class="text-gray-500 text-sm">💬 댓글 기능 준비 중...</p>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-gray-500">아직 게시글이 없습니다.</p>
+  {% endfor %}
+</div>
+
+<!-- 페이징 처리 영역 -->
+<div class="mt-6 text-center text-sm text-gray-500">
+  페이지 기능은 추후 추가될 예정입니다.
+</div>
+
+{% endblock %}

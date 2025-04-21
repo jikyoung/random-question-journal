@@ -11,6 +11,8 @@ FastAPI 기반으로 개발되었으며, 카카오 로그인, 질문 저장, PDF
 - ✅ 답변 저장 및 질문/답변 함께 보기
 - ✅ 답변 PDF 다운로드 기능
 - ✅ 관리자 페이지에서 질문 추가/삭제 가능
+- ✅ 사용자 게시판 기능 (글 작성, 조회, 삭제)
+- ✅ 세션 기반 닉네임 저장 및 표시
 
 ## 🛠 기술 스택
 - Backend: **FastAPI**, **SQLAlchemy**, **SQLite**
@@ -24,7 +26,7 @@ random-question-journal/
 ├── alembic/
 │   ├── env.py
 │   ├── script.py.mako
-│   └── versions/
+│   └── versions/  # 새로운 버전 존재
 ├── alembic.ini
 ├── app/
 │   ├── main.py
@@ -42,13 +44,14 @@ random-question-journal/
 │   │   ├── signup.html
 │   │   ├── answers.html
 │   │   ├── admin_questions.html
-│   │   └── new_question.html
+│   │   ├── new_question.html
+│   │   └── posts.html
 │   └── routers/
 │       ├── pages.py
 │       ├── answers.py
 │       ├── auth.py
 │       ├── questions.py
-│       └── admin_questions.py
+│       └── posts.py
 ├── db.sqlite3
 ├── project_tree.py
 ├── questions.json
@@ -61,20 +64,22 @@ random-question-journal/
 ```bash
 # 가상환경 활성화 후 아래 명령 실행
 uvicorn app.main:app --reload
-📌 현재 구현 상태 (2025.04.11 기준)
+📌 현재 구현 상태 (2025.04.21 기준)
 	• FastAPI 기반 앱 기본 구조 구축 완료
-	• Alembic 기반 DB 마이그레이션 적용
+	• Alembic 기반 DB 마이그레이션 적용 및 운영 중
 	• 질문 DB 설계 및 CRUD 기능 구현
-	• 이메일 회원가입 및 로그인 기능 추가
+	• 이메일 회원가입 및 로그인 기능 구현
 	• 카카오 로그인 연동 구현
 	• 질문 UI 출력 및 답변 저장
-	• 답변 PDF 저장 기능 및 UI 개선
-	• 질문 중복 방지 및 고정 로직 적용
+	• 답변 PDF 저장 기능 구현 (WeasyPrint)
+	• 질문 중복 방지 및 고정 순환 로직 구현
 	• "또 다른 질문에 답하기" 기능 구현
-	• 답변 조회 페이지에서 질문/답변 함께 표시
-
+	• 답변 조회 페이지에서 질문/답변 함께 출력
+	• 사용자 게시판 기능 구현 (글 작성, 삭제, 최신순 조회)
+	• 닉네임 세션 저장 및 게시글에 표시
+	• 게시글 상세 페이지 구현 (제목/내용/닉네임/작성일)
+	• 게시글 수정 기능 준비 중
 ✨ 다음 목표
-	• 사용자 게시판 기능 (자유롭게 글 등록 및 답변 공유)
 	• 질문 추천 알고리즘 도입 (답변 기반 개인화)
 	• 출석 기반 보상 시스템 (무료 PDF or 질문 해금)
 	• 그림일기 기능 도입 (AI 그림 생성 or 직접 업로드)

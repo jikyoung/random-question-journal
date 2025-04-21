@@ -24,9 +24,14 @@
           <h2 class="text-lg font-semibold">{{ post.title }}</h2>
           <p class="text-gray-700 mt-2">{{ post.content }}</p>
         </div>
-        <form method="post" action="/posts/{{ post.id }}/delete" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-          <button type="submit" class="text-red-500 text-sm hover:underline">삭제</button>
-        </form>
+        {% if session.get("nickname") == post.nickname %}
+          <div class="flex items-center gap-4 mt-2 text-sm">
+            <a href="/posts/edit/{{ post.id }}" class="text-blue-500 hover:underline">수정</a>
+            <form method="post" action="/posts/{{ post.id }}/delete" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+              <button type="submit" class="text-red-500 hover:underline">삭제</button>
+            </form>
+          </div>
+        {% endif %}
       </div>
       <div class="text-sm text-gray-400 mt-2 flex justify-between">
         <span>{{ post.nickname or "익명" }}</span>

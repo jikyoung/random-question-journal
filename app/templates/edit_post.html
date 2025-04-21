@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="max-w-xl mx-auto mt-10">
+    <h1 class="text-2xl font-bold mb-4">게시글 수정</h1>
+    <form method="post" action="/posts/edit/{{ post.id }}">
+      <input 
+        class="w-full border rounded px-3 py-2 mb-3" 
+        type="text" 
+        name="title" 
+        value="{{ post.title }}" 
+        placeholder="제목을 입력하세요" 
+        required
+      >
+      <textarea 
+        name="content" 
+        rows="8" 
+        required 
+        placeholder="내용을 입력하세요" 
+        class="w-full border rounded px-3 py-2 mb-3"
+      >{{ post.content }}</textarea>
+      <div class="flex justify-between">
+        <a href="/posts" class="text-blue-600 hover:underline">← 목록으로 돌아가기</a>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">수정 완료</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

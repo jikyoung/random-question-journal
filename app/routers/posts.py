@@ -67,3 +67,18 @@ def edit_post(
     post.content = content
     db.commit()
     return RedirectResponse(url="/posts", status_code=302)
+
+
+
+@router.post("/posts/{post_id}/comments")
+def create_comment(
+    post_id: int,
+    request: Request,  # ✅ 앞으로 옮김
+    content: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    nickname = request.session.get("nickname", "익명")
+    new_comment = models.Comment(post_id=post_id, content=content, nickname=nickname)
+    db.add(new_comment)
+    db.commit()
+    return RedirectResponse(url="/posts", status_code=302)

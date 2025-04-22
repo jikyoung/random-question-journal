@@ -47,3 +47,17 @@ class Post(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     nickname = Column(String, nullable=True)
+
+Post.comments = relationship("Comment", back_populates="post", cascade="all, delete")
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    content = Column(Text, nullable=False)
+    nickname = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    post = relationship("Post", back_populates="comments")

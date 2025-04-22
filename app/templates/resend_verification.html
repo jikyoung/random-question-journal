@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="max-w-md mx-auto mt-10 bg-white p-6 shadow rounded">
+    <h2 class="text-2xl font-semibold mb-4">📧 인증 메일 다시 받기</h2>
+    <form method="post" action="/auth/resend" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
+        <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-3 py-2 mt-1">
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">인증 메일 다시 보내기</button>
+    </form>
+  </div>
+{% endblock %}

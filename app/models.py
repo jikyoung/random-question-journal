@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -36,7 +36,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     nickname = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-
+    is_verified = Column(Boolean, default=False)  # ✅ 이메일 인증 여부
 
 
 class Post(Base):
